@@ -1,10 +1,6 @@
-import os
-
-import pandas as pd
 import numpy as np
 import joblib
 import librosa
-from datetime import datetime
 
 
 def load_model(model_path):
@@ -19,15 +15,11 @@ def predict(model, file_name):
     Predicts the class of the input data.
     """
     sr = librosa.get_samplerate(file_name)
-    prev = datetime.now()
     X = get_features(file_name, fs=sr, scale_audio=True, onlySingleDigit=True)
-    print("Time taken to get features: ", datetime.now() - prev)
     X = X.reshape(1, 3)
-    print(X)
-    print(X.shape)
     prediction = model.predict(X)[0]
-    # prediction_proba = model.predict_proba(X)
-    return prediction
+    prediction_proba = model.predict_proba(X)[0]
+    return prediction, prediction_proba
 
 
 def getPitch(x, fs, winLen=0.02):

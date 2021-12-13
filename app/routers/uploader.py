@@ -18,6 +18,7 @@ async def upload_file(audio_file: UploadFile = File(...)):
     file_location = f"app/files/{now}-{audio_file.filename}"
     with open(file_location, "wb+") as file_object:
         file_object.write(audio_file.file.read())
-    prediction = classifier.predict(model, file_location)
+    prediction, prediction_prob = classifier.predict(model, file_location)
     mapper = {0: "Potter", 1: "StarWars"}
-    return {"prediction": mapper[prediction]}
+    label = mapper[prediction] if prediction_prob[prediction] > 0.75 else "Unknown"
+    return {"prediction": label}
